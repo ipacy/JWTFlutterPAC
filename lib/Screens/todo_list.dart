@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
@@ -14,32 +15,48 @@ import 'package:flutter_guid/flutter_guid.dart';
 
 final storage = new FlutterSecureStorage();
 
-class TodoList extends StatefulWidget {
+class ProductList extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return TodoListState();
   }
 }
 
-class TodoListState extends State<TodoList> {
-  DatabaseHelper databaseHelper = DatabaseHelper();
+class TodoListState extends State<ProductList> {
   List<Product> productList;
   int count = 0;
   String token;
-
+  ProductsDB productsDb = new ProductsDB();
   @override
   Widget build(BuildContext context) {
-    if (productList == null) {
+    /*   if (productList == null) {
       productList = List<Product>();
-      getProduct();
-    }
-
+       getProduct();
+    } */
     return Scaffold(
       appBar: AppBar(
         title: Text('APK Cipher'),
         backgroundColor: Colors.blueGrey,
       ),
-      body: getTodoListView(),
+      body: Center(
+        child: FutureBuilder(
+            future: productsDb.getBooks(),
+            builder: (BuildContext context, AsyncSnapshot<Result> snapshot) {
+              if (snapshot.data is SuccessState) {
+                List<Product> products = (snapshot.data as SuccessState).value;
+                return ListView.builder(
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      return productItem(index, products, context);
+                    });
+              } else if (snapshot.data is ErrorState) {
+                String errorMessage = (snapshot.data as ErrorState).msg;
+                return Text(errorMessage);
+              } else {
+                return CircularProgressIndicator();
+              }
+            }),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           debugPrint('FAB clicked');
@@ -51,9 +68,48 @@ class TodoListState extends State<TodoList> {
     );
   }
 
-  ListView getTodoListView() {
+  Dismissible productItem(
+      int index, List<Product> products, BuildContext context) {
+    return Dismissible(
+      background: Container(
+        color: Colors.red,
+      ),
+      key: Key(products[index].name),
+      child: ListTile(
+        leading: Image.asset("assets/logo2.png"),
+        title: Text(products[index].name),
+        subtitle: Text(
+          products[index].price.toString() + products[index].unit,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.caption,
+        ),
+        isThreeLine: true,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            GestureDetector(
+              child: Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+              onTap: () {
+                _delete(context, products[index]);
+              },
+            ),
+          ],
+        ),
+        /* Text(
+          products[index].price.toString(),
+          style: Theme.of(context).textTheme.caption,
+        ), */
+      ),
+    );
+  }
+
+  ListView getTodoListView(List<Product> products) {
     return ListView.builder(
-      itemCount: this.productList.length,
+      itemCount: products.length,
       itemBuilder: (context, index) {
         return Card(
           color: Colors.white,
@@ -61,13 +117,13 @@ class TodoListState extends State<TodoList> {
           child: ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.amber,
-              child: Text(getFirstLetter(this.productList[index].name),
+              child: Text(getFirstLetter(products[index].name),
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
-            title: Text(this.productList[index].name,
+            title: Text(products[index].name,
                 style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text(this.productList[index].price.toString() +
-                this.productList[index].unit),
+            subtitle:
+                Text(products[index].price.toString() + products[index].unit),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -134,22 +190,5 @@ class TodoListState extends State<TodoList> {
     setState(() {
       productList = oList.value;
     });
-    /*    var oToken = await jwtOrEmpty;
- http.get(
-      'http://10.0.2.2:8000/api/products',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ' + oToken,
-      },
-    ).then((response) {
-      setState(() {
-        Iterable list = json.decode(response.body)['data'];
-        var fList = list.map((model) {
-          return Product.fromJson(model);
-        }).toList();
-        productList =
-            fList; //list.map((model) => Product.fromJson(model)).toList();
-      });
-    }); */
   }
 }
