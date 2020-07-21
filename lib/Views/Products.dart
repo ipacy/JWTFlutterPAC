@@ -104,9 +104,9 @@ class ProductListState extends State<Products> {
         if (response is SuccessState) {
           Toasted.showSnackBar(context, response.value);
         }
-        /* setState(() {
-          products.getProducts();
-        }); */
+        setState(() {
+          products.removeAt(index);
+        });
         // Result result = await _apiResponse.deleteBook(index);
       },
       background: Container(
