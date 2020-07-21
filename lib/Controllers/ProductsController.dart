@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_app/Enums/request_type.dart';
 import 'package:flutter_app/Models/Product.dart';
-import 'package:flutter_app/Models/Result.dart';
+import 'package:flutter_app/Models/Response/Result.dart';
 import 'package:flutter_app/Models/DBManager/DBManager.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

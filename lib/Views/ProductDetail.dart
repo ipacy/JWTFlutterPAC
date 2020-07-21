@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
-import 'package:flutter_app/Models/Result.dart';
+import 'package:flutter_app/Models/Response/Result.dart';
 import 'package:flutter_app/Models/todo.dart';
 import 'package:flutter_app/Controllers/ProductsController.dart';
 import 'package:flutter_app/Models/DBManager/database_helper.dart';

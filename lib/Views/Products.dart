@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Controllers/ProductsController.dart';
 import 'package:flutter_app/Models/Product.dart';
-import 'package:flutter_app/Models/Result.dart';
+import 'package:flutter_app/Models/Response/Result.dart';
 import 'package:flutter_app/Utils/Toasted.dart';
 import 'package:flutter_app/Views/ProductDetail.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
