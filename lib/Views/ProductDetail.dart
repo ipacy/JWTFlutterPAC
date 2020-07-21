@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Response/Result.dart';
-import 'package:flutter_app/Models/todo.dart';
 import 'package:flutter_app/Controllers/ProductsController.dart';
-import 'package:flutter_app/Models/DBManager/database_helper.dart';
+import 'package:flutter_app/Utils/Toasted.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ProductDetail extends StatefulWidget {
   final String appBarTitle;
   final Product product;
 
-  // TodoDetail(this.todo, this.appBarTitle);
   ProductDetail(this.product, this.appBarTitle);
 
   @override
@@ -19,12 +18,9 @@ class ProductDetail extends StatefulWidget {
 }
 
 class TodoDetailState extends State<ProductDetail> {
-  //static var _priorities = ['High', 'Low'];
   ProductsController productsDb = new ProductsController();
-  DatabaseHelper helper = DatabaseHelper();
 
   String appBarTitle;
-  Todo todo;
   final Product product;
 
   TextEditingController nameController = TextEditingController();
@@ -62,12 +58,6 @@ class TodoDetailState extends State<ProductDetail> {
             padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),
             child: ListView(
               children: <Widget>[
-                Text(
-                  idController.text,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
                 Padding(
                   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                   child: TextField(
@@ -75,7 +65,7 @@ class TodoDetailState extends State<ProductDetail> {
                     style: textStyle,
                     onChanged: (value) {
                       debugPrint('Something changed in Title Text Field');
-                      updateTitle();
+                      // updateTitle();
                     },
                     decoration: InputDecoration(
                         labelText: 'Name',
@@ -91,7 +81,7 @@ class TodoDetailState extends State<ProductDetail> {
                     style: textStyle,
                     onChanged: (value) {
                       debugPrint('Something changed in Title Text Field');
-                      updateTitle();
+                      // updateTitle();
                     },
                     decoration: InputDecoration(
                         labelText: 'Price',
@@ -108,7 +98,7 @@ class TodoDetailState extends State<ProductDetail> {
                     style: textStyle,
                     onChanged: (value) {
                       debugPrint('Something changed in Description Text Field');
-                      updateDescription();
+                      // updateDescription();
                     },
                     decoration: InputDecoration(
                         labelText: 'Unit',
@@ -171,16 +161,6 @@ class TodoDetailState extends State<ProductDetail> {
     Navigator.pop(context, true);
   }
 
-  // Update the title of todo object
-  void updateTitle() {
-    todo.title = nameController.text;
-  }
-
-  // Update the description of todo object
-  void updateDescription() {
-    todo.description = unitController.text;
-  }
-
   // Save data to database
   void _save(BuildContext context) async {
     if (idController.text == "00000000-0000-0000-0000-000000000000") {
@@ -204,35 +184,17 @@ class TodoDetailState extends State<ProductDetail> {
       var response = await productsDb.updateProduct(product, idController.text);
       if (response is SuccessState) {
         Navigator.pushNamed(context, '/product_list');
-        //moveToLastScreen();
       }
     }
   }
 
   void _delete() async {
-    moveToLastScreen();
-
-    // Case 1: If user is trying to delete the NEW todo i.e. he has come to
-    // the detail page by pressing the FAB of todoList page.
-    if (todo.id == null) {
-      _showAlertDialog('Status', 'No Todo was deleted');
-      return;
-    }
-
-    // Case 2: User is trying to delete the old todo that already has a valid ID.
-    int result = await helper.deleteTodo(todo.id);
-    if (result != 0) {
-      _showAlertDialog('Status', 'Todo Deleted Successfully');
+    var response = await productsDb.deleteProduct(idController.text);
+    if (response is SuccessState) {
+      moveToLastScreen();
     } else {
-      _showAlertDialog('Status', 'Error Occured while Deleting Todo');
+      Fluttertoast.showToast(
+          msg: 'Product Deleted', toastLength: Toast.LENGTH_LONG);
     }
-  }
-
-  void _showAlertDialog(String title, String message) {
-    AlertDialog alertDialog = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-    );
-    showDialog(context: context, builder: (_) => alertDialog);
   }
 }
