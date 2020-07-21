@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_app/Enums/request_type.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
-import 'package:flutter_app/Utils/DBManager.dart';
+import 'package:flutter_app/Models/DBManager/DBManager.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -32,7 +33,8 @@ class ProductsController {
     //_addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
-      final response = await DBManager.getItems(oToken, '/api/products');
+      final response =
+          await DBManager.callDB(RequestType.GET, oToken, '/api/products');
       if (response.statusCode == 200) {
         Iterable list = json.decode(response.body)['data'];
         var fList = list.map((model) {
@@ -54,7 +56,8 @@ class ProductsController {
     //  _addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
-      final response = await DBManager.deleteItem(oToken, '/api/products', sId);
+      final response = await DBManager.callDB(
+          RequestType.DELETE, oToken, '/api/products/' + sId);
       if (response.statusCode == 200) {
         return Result<String>.success(
             json.decode(response.body)['message']['text']);
@@ -70,8 +73,8 @@ class ProductsController {
     // _addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
-      final response = await DBManager.addItem(
-          oToken, '/api/products/', json.encode(product));
+      final response = await DBManager.callDB(
+          RequestType.POST, oToken, '/api/products/', '', json.encode(product));
       if (response.statusCode == 200) {
         return Result<String>.success(
             json.decode(response.body)['message']['text']);
@@ -87,8 +90,8 @@ class ProductsController {
     // _addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
-      final response = await DBManager.updateItem(
-          oToken, '/api/products/' + sId, json.encode(product));
+      final response = await DBManager.callDB(RequestType.PUT, oToken,
+          '/api/products/' + sId, '', json.encode(product));
       if (response.statusCode == 200) {
         return Result<String>.success(
             json.decode(response.body)['message']['text']);

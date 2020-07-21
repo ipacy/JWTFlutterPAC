@@ -3,7 +3,7 @@ import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
 import 'package:flutter_app/Models/todo.dart';
 import 'package:flutter_app/Controllers/ProductsController.dart';
-import 'package:flutter_app/Utils/database_helper.dart';
+import 'package:flutter_app/Models/DBManager/database_helper.dart';
 
 class ProductDetail extends StatefulWidget {
   final String appBarTitle;
