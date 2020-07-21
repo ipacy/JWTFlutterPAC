@@ -4,7 +4,7 @@ import 'package:flutter_app/Controllers/ProductsController.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
 import 'package:flutter_app/Utils/Toasted.dart';
-import 'package:flutter_app/Screens/todo_detail.dart';
+import 'package:flutter_app/Views/ProductDetail.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -160,7 +160,7 @@ class ProductListState extends State<Products> {
 
   void navigateToDetail(Product product, String title) async {
     await Navigator.pushNamed(context, '/product_detail',
-        arguments: TodoDetail(
+        arguments: ProductDetail(
           product,
           title,
         ));

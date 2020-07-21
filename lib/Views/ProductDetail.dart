@@ -5,12 +5,12 @@ import 'package:flutter_app/Models/todo.dart';
 import 'package:flutter_app/Controllers/ProductsController.dart';
 import 'package:flutter_app/Utils/database_helper.dart';
 
-class TodoDetail extends StatefulWidget {
+class ProductDetail extends StatefulWidget {
   final String appBarTitle;
   final Product product;
 
   // TodoDetail(this.todo, this.appBarTitle);
-  TodoDetail(this.product, this.appBarTitle);
+  ProductDetail(this.product, this.appBarTitle);
 
   @override
   State<StatefulWidget> createState() {
@@ -18,7 +18,7 @@ class TodoDetail extends StatefulWidget {
   }
 }
 
-class TodoDetailState extends State<TodoDetail> {
+class TodoDetailState extends State<ProductDetail> {
   //static var _priorities = ['High', 'Low'];
   ProductsController productsDb = new ProductsController();
   DatabaseHelper helper = DatabaseHelper();
