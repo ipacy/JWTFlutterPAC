@@ -16,25 +16,15 @@ class ProductsController {
 
   factory ProductsController() => _apiResponse;
 
-  final _storage = FlutterSecureStorage();
-
   StreamController<Result> _addProductStream;
   Stream<Result> hasBookAdded() => _addProductStream.stream;
   void init() => _addProductStream = StreamController();
 
-  Future<String> get jwtOrEmpty async {
-    var storage = new FlutterSecureStorage();
-    var jwt = await storage.read(key: "token");
-    if (jwt == null) return "";
-    return jwt;
-  }
-
   Future<Result> getProducts() async {
     //_addProductStream.sink.add(Result<String>.loading("Loading"));
-    var oToken = await jwtOrEmpty;
+
     try {
-      final response =
-          await DBManager.callDB(RequestType.GET, oToken, '/api/products');
+      final response = await DBManager.callDB(RequestType.GET, '/api/products');
       if (response.statusCode == 200) {
         Iterable list = json.decode(response.body)['data'];
         var fList = list.map((model) {
@@ -54,10 +44,10 @@ class ProductsController {
 
   Future<Result> deleteProduct(String sId) async {
     //  _addProductStream.sink.add(Result<String>.loading("Loading"));
-    var oToken = await jwtOrEmpty;
+
     try {
-      final response = await DBManager.callDB(
-          RequestType.DELETE, oToken, '/api/products/' + sId);
+      final response =
+          await DBManager.callDB(RequestType.DELETE, '/api/products/' + sId);
       if (response.statusCode == 200) {
         return Result<String>.success(
             json.decode(response.body)['message']['text']);
@@ -71,10 +61,10 @@ class ProductsController {
 
   Future<Result> addProduct(dynamic product) async {
     // _addProductStream.sink.add(Result<String>.loading("Loading"));
-    var oToken = await jwtOrEmpty;
+
     try {
       final response = await DBManager.callDB(
-          RequestType.POST, oToken, '/api/products/', '', json.encode(product));
+          RequestType.POST, '/api/products/', '', json.encode(product));
       if (response.statusCode == 200) {
         return Result<String>.success(
             json.decode(response.body)['message']['text']);
@@ -88,10 +78,9 @@ class ProductsController {
 
   Future<Result> updateProduct(dynamic product, String sId) async {
     // _addProductStream.sink.add(Result<String>.loading("Loading"));
-    var oToken = await jwtOrEmpty;
     try {
-      final response = await DBManager.callDB(RequestType.PUT, oToken,
-          '/api/products/' + sId, '', json.encode(product));
+      final response = await DBManager.callDB(
+          RequestType.PUT, '/api/products/' + sId, '', json.encode(product));
       if (response.statusCode == 200) {
         return Result<String>.success(
             json.decode(response.body)['message']['text']);

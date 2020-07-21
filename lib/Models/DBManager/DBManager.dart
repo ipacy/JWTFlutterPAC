@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 const baseUrl = "http://10.0.2.2:8000";
 
 class DBManager {
-  static Future callDB(RequestType requestType, String thoken, path,
+  static Future callDB(RequestType requestType, path,
       [String sId, dynamic parameter]) async {
     final _storage = FlutterSecureStorage();
     final oToken = await _storage.read(key: 'token');
