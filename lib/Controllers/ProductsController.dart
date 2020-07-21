@@ -6,13 +6,14 @@ import 'package:flutter_app/Utils/DBManager.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class ProductsDB {
+class ProductsController {
   //Creating Singleton
-  ProductsDB._privateConstructor();
+  ProductsController._privateConstructor();
 
-  static final ProductsDB _apiResponse = ProductsDB._privateConstructor();
+  static final ProductsController _apiResponse =
+      ProductsController._privateConstructor();
 
-  factory ProductsDB() => _apiResponse;
+  factory ProductsController() => _apiResponse;
 
   final _storage = FlutterSecureStorage();
 
@@ -28,7 +29,7 @@ class ProductsDB {
   }
 
   Future<Result> getProducts() async {
-    // _addProductStream.sink.add(Result<String>.loading("Loading"));
+    //_addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
       final response = await DBManager.getItems(oToken, '/api/products');
@@ -37,7 +38,7 @@ class ProductsDB {
         var fList = list.map((model) {
           return Product.fromJson(model);
         }).toList();
-        //_addProductStream.sink.add(Result<List<Product>>.success(fList));
+        //_addProductStream.sink.add(Result.error("Product list not available"));
         return Result<List<Product>>.success(fList);
       } else {
         // _addProductStream.sink.add(Result.error("Product list not available"));

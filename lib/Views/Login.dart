@@ -8,13 +8,13 @@ import 'package:flutter_app/Utils/Toasted.dart';
 // import 'package:login/home_page.dart';
 final storage = new FlutterSecureStorage();
 
-class LoginPage extends StatefulWidget {
+class Login extends StatefulWidget {
   static String tag = 'login-page';
   @override
   _LoginPageState createState() => new _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<Login> {
   TextEditingController _textController = TextEditingController();
   TextEditingController _passController = TextEditingController();
   @override
@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
         var proceed = await loginUser('abhi@email.com', 'Test@123');
         if (proceed) {
           Toasted.showToast('Logged in Successfully', 'long');
-          Navigator.pushNamed(context, '/todo_list');
+          Navigator.pushNamed(context, '/product_list');
         } else {
           Toasted.showSnackBar(context, 'Login Failed');
         }

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/Controllers/ProductsController.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
-import 'package:flutter_app/Utils/ProductsDB.dart';
 import 'package:flutter_app/Utils/Toasted.dart';
 import 'package:flutter_app/Screens/todo_detail.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,15 +11,16 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 final storage = new FlutterSecureStorage();
 
-class ProductList extends StatefulWidget {
+class Products extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return TodoListState();
+    return ProductListState();
   }
 }
 
-class TodoListState extends State<ProductList> {
-  ProductsDB productsDb = new ProductsDB();
+class ProductListState extends State<Products> {
+  ProductsController productsDb = new ProductsController();
+
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   @override
@@ -104,7 +105,7 @@ class TodoListState extends State<ProductList> {
           Toasted.showSnackBar(context, response.value);
         }
         /* setState(() {
-          productsDb.getProducts();
+          products.getProducts();
         }); */
         // Result result = await _apiResponse.deleteBook(index);
       },
@@ -180,8 +181,8 @@ class TodoListState extends State<ProductList> {
     _refreshController.loadComplete();
   }
   // void getProduct() async {
-  //   ProductsDB productsDb = new ProductsDB();
-  //   var oList = await productsDb.getProducts() as SuccessState;
+  //   ProductsController products = new ProductsController();
+  //   var oList = await products.getProducts() as SuccessState;
 
   //   setState(() {
   //     productList = oList.value;

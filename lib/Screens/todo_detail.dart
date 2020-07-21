@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
 import 'package:flutter_app/Models/todo.dart';
-import 'package:flutter_app/Utils/ProductsDB.dart';
+import 'package:flutter_app/Controllers/ProductsController.dart';
 import 'package:flutter_app/Utils/database_helper.dart';
 
 class TodoDetail extends StatefulWidget {
@@ -20,7 +20,7 @@ class TodoDetail extends StatefulWidget {
 
 class TodoDetailState extends State<TodoDetail> {
   //static var _priorities = ['High', 'Low'];
-  ProductsDB productsDb = new ProductsDB();
+  ProductsController productsDb = new ProductsController();
   DatabaseHelper helper = DatabaseHelper();
 
   String appBarTitle;
@@ -191,7 +191,7 @@ class TodoDetailState extends State<TodoDetail> {
       };
       var response = await productsDb.addProduct(product);
       if (response is SuccessState) {
-        Navigator.pushNamed(context, '/todo_list');
+        Navigator.pushNamed(context, '/product_list');
         //moveToLastScreen();
       }
     } else {
@@ -203,7 +203,7 @@ class TodoDetailState extends State<TodoDetail> {
       };
       var response = await productsDb.updateProduct(product, idController.text);
       if (response is SuccessState) {
-        Navigator.pushNamed(context, '/todo_list');
+        Navigator.pushNamed(context, '/product_list');
         //moveToLastScreen();
       }
     }
