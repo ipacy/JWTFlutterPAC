@@ -5,7 +5,6 @@ import 'package:flutter_app/Models/DBManager/DBManager.dart';
 import 'package:flutter_app/Models/Response/Result.dart';
 
 class LoginController {
-  //Creating Singleton
   LoginController._privateConstructor();
 
   static final LoginController _apiResponse =

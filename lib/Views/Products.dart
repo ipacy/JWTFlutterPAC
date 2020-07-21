@@ -28,6 +28,7 @@ class ProductListState extends State<Products> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Products List'),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),
@@ -89,7 +90,7 @@ class ProductListState extends State<Products> {
           debugPrint('FAB clicked');
           navigateToDetail(Product(new Guid(''), '', '', 0), 'Add Todo');
         },
-        tooltip: 'Add Todo',
+        tooltip: 'Add Product',
         child: Icon(Icons.add),
       ),
     );
@@ -167,9 +168,7 @@ class ProductListState extends State<Products> {
   }
 
   void _onRefresh() async {
-    // monitor network fetch
     await Future.delayed(Duration(milliseconds: 1000));
-    // if failed,use refreshFailed()
     _refreshController.refreshCompleted();
     setState(() {
       productsDb.getProducts();
@@ -180,12 +179,4 @@ class ProductListState extends State<Products> {
     if (mounted) setState(() {});
     _refreshController.loadComplete();
   }
-  // void getProduct() async {
-  //   ProductsController products = new ProductsController();
-  //   var oList = await products.getProducts() as SuccessState;
-
-  //   setState(() {
-  //     productList = oList.value;
-  //   });
-  // }
 }
