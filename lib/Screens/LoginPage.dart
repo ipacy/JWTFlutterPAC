@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_app/Utils/Toasted.dart';
 
 // import 'package:login/home_page.dart';
@@ -15,6 +15,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  TextEditingController _textController = TextEditingController();
+  TextEditingController _passController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final logo = Hero(
@@ -25,63 +27,33 @@ class _LoginPageState extends State<LoginPage> {
         child: Image.asset('assets/logo2.png'),
       ),
     );
-
-    final email = TextFormField(
-      keyboardType: TextInputType.emailAddress,
+    _textController.text = 'abhi@email.com';
+    final emailC = CupertinoTextField(
+      controller: _textController,
       autofocus: false,
-      initialValue: 'abhi@email.com',
-      decoration: InputDecoration(
-        hintText: 'Email',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
+      placeholder: 'Email',
     );
 
-    final password = TextFormField(
+    _passController.text = 'Test@123';
+    final passwordC = CupertinoTextField(
+      controller: _passController,
       autofocus: false,
-      initialValue: 'Test@123',
       obscureText: true,
-      decoration: InputDecoration(
-        hintText: 'Password',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
+      placeholder: 'Password',
     );
-    final dummyButton = Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(40),
-        ),
-        onPressed: () async {
-          Toasted.showToast('TestToast', 'long');
-        },
-        padding: EdgeInsets.all(12),
-        color: Colors.amber,
-        child: Text('Test', style: TextStyle(color: Colors.white)),
-      ),
-    );
-    final loginButton = Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        color: Colors.amber,
-        onPressed: () async {
-          var proceed = await loginUser('abhi@email.com', 'Test@123');
-          if (proceed) {
-            Toasted.showToast('Logged in Successfully', 'long');
-            Navigator.pushNamed(context, '/todo_list');
-          } else {
-            //Fluttertoast.showToast(msg: "Login Failed ");
-          }
 
-          //Navigator.of(context).pushNamed(HomePage.tag);
-        },
-        padding: EdgeInsets.all(12),
-        child: Text('Log In', style: TextStyle(color: Colors.white)),
-      ),
+    final loginC = CupertinoButton(
+      child: Text('Login'),
+      color: Color.fromARGB(150, 0, 0, 255),
+      onPressed: () async {
+        var proceed = await loginUser('abhi@email.com', 'Test@123');
+        if (proceed) {
+          Toasted.showToast('Logged in Successfully', 'long');
+          Navigator.pushNamed(context, '/todo_list');
+        } else {
+          Toasted.showSnackBar(context, 'Login Failed');
+        }
+      },
     );
 
     final forgotLabel = FlatButton(
@@ -100,12 +72,17 @@ class _LoginPageState extends State<LoginPage> {
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
           children: <Widget>[
             logo,
+            Text(
+              'Vistex Products',
+              style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 40.0),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: 48.0),
-            email,
+            emailC,
             SizedBox(height: 8.0),
-            password,
+            passwordC,
             SizedBox(height: 24.0),
-            loginButton,
+            loginC,
             forgotLabel
           ],
         ),
@@ -114,8 +91,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<bool> loginUser(String username, String password) async {
-    var oUrl1 = 'http://localhost:8000/api/Auth/login';
-//    var oUrl2 = 'https://localhost:44385/api/Auth/login';
+    // var oUrl1 = 'http://localhost:8000/api/Auth/login';
     var oUrl2 = 'http://10.0.2.2:8000/api/Auth/login';
     final http.Response response = await http.post(
       oUrl2,
@@ -123,8 +99,8 @@ class _LoginPageState extends State<LoginPage> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'username': username,
-        'password': password,
+        'username': _textController.text,
+        'password': _passController.text,
       }),
     );
     if (response.statusCode == 200) {

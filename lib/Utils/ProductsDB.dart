@@ -15,7 +15,10 @@ class ProductsDB {
   factory ProductsDB() => _apiResponse;
 
   final _storage = FlutterSecureStorage();
-  // StreamController<Result> _addBookStream;
+
+  StreamController<Result> _addProductStream;
+  Stream<Result> hasBookAdded() => _addProductStream.stream;
+  void init() => _addProductStream = StreamController();
 
   Future<String> get jwtOrEmpty async {
     var storage = new FlutterSecureStorage();
@@ -25,6 +28,7 @@ class ProductsDB {
   }
 
   Future<Result> getProducts() async {
+    // _addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
       final response = await DBManager.getItems(oToken, '/api/products');
@@ -33,16 +37,20 @@ class ProductsDB {
         var fList = list.map((model) {
           return Product.fromJson(model);
         }).toList();
+        //_addProductStream.sink.add(Result<List<Product>>.success(fList));
         return Result<List<Product>>.success(fList);
       } else {
+        // _addProductStream.sink.add(Result.error("Product list not available"));
         return Result.error("Product list not available");
       }
     } catch (error) {
+      // _addProductStream.sink.add(Result.error("Something went wrong!"));
       return Result.error("Something went wrong!");
     }
   }
 
   Future<Result> deleteProduct(String sId) async {
+    //  _addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
       final response = await DBManager.deleteItem(oToken, '/api/products', sId);
@@ -58,6 +66,7 @@ class ProductsDB {
   }
 
   Future<Result> addProduct(dynamic product) async {
+    // _addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
       final response = await DBManager.addItem(
@@ -74,6 +83,7 @@ class ProductsDB {
   }
 
   Future<Result> updateProduct(dynamic product, String sId) async {
+    // _addProductStream.sink.add(Result<String>.loading("Loading"));
     var oToken = await jwtOrEmpty;
     try {
       final response = await DBManager.updateItem(
@@ -88,4 +98,6 @@ class ProductsDB {
       return Result.error("Something went wrong!");
     }
   }
+
+  void dispose() => _addProductStream.close();
 }

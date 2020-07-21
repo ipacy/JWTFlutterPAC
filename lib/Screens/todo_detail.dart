@@ -1,12 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
 import 'package:flutter_app/Models/todo.dart';
 import 'package:flutter_app/Utils/ProductsDB.dart';
-import 'package:flutter_app/Utils/Toasted.dart';
 import 'package:flutter_app/Utils/database_helper.dart';
-import 'package:intl/intl.dart';
 
 class TodoDetail extends StatefulWidget {
   final String appBarTitle;
@@ -47,6 +44,7 @@ class TodoDetailState extends State<TodoDetail> {
     idController.text = product.id.toString();
 
     return WillPopScope(
+        // ignore: missing_return
         onWillPop: () {
           moveToLastScreen();
         },

@@ -26,7 +26,7 @@ class TodoListState extends State<ProductList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('APK Cipher'),
+        title: Text('Products List'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),
@@ -103,13 +103,10 @@ class TodoListState extends State<ProductList> {
         if (response is SuccessState) {
           Toasted.showSnackBar(context, response.value);
         }
-
+        /* setState(() {
+          productsDb.getProducts();
+        }); */
         // Result result = await _apiResponse.deleteBook(index);
-        // if (result is SuccessState) {
-        //   setState(() {
-        //     bookCollection.books.removeAt(index);
-        //   });
-        // }
       },
       background: Container(
         color: Colors.red,

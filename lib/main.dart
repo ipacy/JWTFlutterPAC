@@ -3,7 +3,6 @@ import 'package:flutter_app/Screens/todo_list.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'Screens/LoginPage.dart';
 
-// import 'package:todo_list/Screens/todo_detail.dart';
 final storage = new FlutterSecureStorage();
 
 void main() {
@@ -12,14 +11,6 @@ void main() {
 
 class TodoApp extends StatelessWidget {
   @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     title: 'APK Ciper',
-  //     debugShowCheckedModeBanner: false,
-  //     theme: ThemeData(primarySwatch: Colors.blue),
-  //     home: TodoList(),
-  //   );
-  // }
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'APK Ciper',
