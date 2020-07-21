@@ -28,6 +28,7 @@ class TodoApp extends StatelessWidget {
         ),
         home: LoginPage(),
         routes: <String, WidgetBuilder>{
+          '/login_page': (BuildContext context) => LoginPage(),
           '/todo_list': (BuildContext context) => ProductList(),
           '/product_detail': (BuildContext context) =>
               ModalRoute.of(context).settings.arguments,

@@ -1,17 +1,13 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Result.dart';
-import 'package:flutter_app/Utils/DBManager.dart';
 import 'package:flutter_app/Utils/ProductsDB.dart';
 import 'package:flutter_app/Utils/Toasted.dart';
-import 'package:flutter_app/Utils/database_helper.dart';
 import 'package:flutter_app/Screens/todo_detail.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_guid/flutter_guid.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 final storage = new FlutterSecureStorage();
 
@@ -23,32 +19,62 @@ class ProductList extends StatefulWidget {
 }
 
 class TodoListState extends State<ProductList> {
-  List<Product> productList;
-  int count = 0;
-  String token;
   ProductsDB productsDb = new ProductsDB();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   @override
   Widget build(BuildContext context) {
-    /*   if (productList == null) {
-      productList = List<Product>();
-       getProduct();
-    } */
     return Scaffold(
       appBar: AppBar(
         title: Text('APK Cipher'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              Navigator.pushNamed(context, '/login_page');
+            },
+          )
+        ],
         backgroundColor: Colors.blueGrey,
       ),
       body: Center(
         child: FutureBuilder(
-            future: productsDb.getBooks(),
+            future: productsDb.getProducts(),
             builder: (BuildContext context, AsyncSnapshot<Result> snapshot) {
               if (snapshot.data is SuccessState) {
                 List<Product> products = (snapshot.data as SuccessState).value;
-                return ListView.builder(
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      return productItem(index, products, context);
-                    });
+                return SmartRefresher(
+                    enablePullDown: true,
+                    enablePullUp: true,
+                    header: WaterDropHeader(),
+                    footer: CustomFooter(
+                      builder: (BuildContext context, LoadStatus mode) {
+                        Widget body;
+                        if (mode == LoadStatus.idle) {
+                          body = Text("pull up load");
+                        } else if (mode == LoadStatus.loading) {
+                          body = CupertinoActivityIndicator();
+                        } else if (mode == LoadStatus.failed) {
+                          body = Text("Load Failed!Click retry!");
+                        } else if (mode == LoadStatus.canLoading) {
+                          body = Text("release to load more");
+                        } else {
+                          body = Text("No more Data");
+                        }
+                        return Container(
+                          height: 55.0,
+                          child: Center(child: body),
+                        );
+                      },
+                    ),
+                    controller: _refreshController,
+                    onRefresh: _onRefresh,
+                    onLoading: _onLoading,
+                    child: ListView.builder(
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          return productItem(index, products, context);
+                        }));
               } else if (snapshot.data is ErrorState) {
                 String errorMessage = (snapshot.data as ErrorState).msg;
                 return Text(errorMessage);
@@ -71,108 +97,67 @@ class TodoListState extends State<ProductList> {
   Dismissible productItem(
       int index, List<Product> products, BuildContext context) {
     return Dismissible(
+      onDismissed: (direction) async {
+        var response =
+            await productsDb.deleteProduct(products[index].id.toString());
+        if (response is SuccessState) {
+          Toasted.showSnackBar(context, response.value);
+        }
+
+        // Result result = await _apiResponse.deleteBook(index);
+        // if (result is SuccessState) {
+        //   setState(() {
+        //     bookCollection.books.removeAt(index);
+        //   });
+        // }
+      },
       background: Container(
         color: Colors.red,
       ),
       key: Key(products[index].name),
-      child: ListTile(
-        leading: Image.asset("assets/logo2.png"),
-        title: Text(products[index].name),
-        subtitle: Text(
-          products[index].price.toString() + products[index].unit,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.caption,
-        ),
-        isThreeLine: true,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            GestureDetector(
-              child: Icon(
-                Icons.delete,
-                color: Colors.red,
+      child: Card(
+        color: Colors.white,
+        elevation: 2.0,
+        child: ListTile(
+          leading: Image.asset("assets/logo2.png"),
+          title: new Row(
+            children: <Widget>[
+              new Text(
+                products[index].name,
+                style:
+                    new TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
+              )
+            ],
+            crossAxisAlignment: CrossAxisAlignment.center,
+          ),
+          subtitle: Text(
+            products[index].price.toString() + products[index].unit,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
+          ),
+          isThreeLine: true,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              GestureDetector(
+                child: Icon(
+                  Icons.lock,
+                  color: Colors.blue,
+                ),
+                onTap: () {
+                  //_delete(context, products[index]);
+                },
               ),
-              onTap: () {
-                _delete(context, products[index]);
-              },
-            ),
-          ],
+            ],
+          ),
+          onTap: () {
+            debugPrint("ListTile Tapped");
+            navigateToDetail(products[index], 'Product Details');
+          },
         ),
-        /* Text(
-          products[index].price.toString(),
-          style: Theme.of(context).textTheme.caption,
-        ), */
       ),
     );
-  }
-
-  ListView getTodoListView(List<Product> products) {
-    return ListView.builder(
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.amber,
-              child: Text(getFirstLetter(products[index].name),
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            title: Text(products[index].name,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle:
-                Text(products[index].price.toString() + products[index].unit),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                GestureDetector(
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  ),
-                  onTap: () {
-                    _delete(context, this.productList[index]);
-                  },
-                ),
-              ],
-            ),
-            onTap: () {
-              debugPrint("ListTile Tapped");
-              // Navigator.pushNamed(context, '/todo_detail');
-              navigateToDetail(this.productList[index], 'Product Details');
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Future<String> get jwtOrEmpty async {
-    var jwt = await storage.read(key: "token");
-    if (jwt == null) return "";
-    return jwt;
-  }
-
-  getFirstLetter(String title) {
-    return title.substring(0, 2);
-  }
-
-  void _delete(BuildContext context, Product product) async {
-    var oToken = await jwtOrEmpty;
-
-    http.delete(
-      'http://10.0.2.2:8000/api/products/' + product.id.toString(),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ' + oToken,
-      },
-    ).then((response) {
-      var oMessage = json.decode(response.body)['message']['text'];
-      Toasted.showSnackBar(context, oMessage);
-      this.getProduct();
-    });
   }
 
   void navigateToDetail(Product product, String title) async {
@@ -183,12 +168,26 @@ class TodoListState extends State<ProductList> {
         ));
   }
 
-  void getProduct() async {
-    ProductsDB productsDb = new ProductsDB();
-    var oList = await productsDb.getBooks() as SuccessState;
-
+  void _onRefresh() async {
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+    _refreshController.refreshCompleted();
     setState(() {
-      productList = oList.value;
+      productsDb.getProducts();
     });
   }
+
+  void _onLoading() async {
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+  // void getProduct() async {
+  //   ProductsDB productsDb = new ProductsDB();
+  //   var oList = await productsDb.getProducts() as SuccessState;
+
+  //   setState(() {
+  //     productList = oList.value;
+  //   });
+  // }
 }

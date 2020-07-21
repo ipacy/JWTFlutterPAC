@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
+import 'package:flutter_app/Models/Result.dart';
 import 'package:flutter_app/Models/todo.dart';
+import 'package:flutter_app/Utils/ProductsDB.dart';
+import 'package:flutter_app/Utils/Toasted.dart';
 import 'package:flutter_app/Utils/database_helper.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +23,7 @@ class TodoDetail extends StatefulWidget {
 
 class TodoDetailState extends State<TodoDetail> {
   //static var _priorities = ['High', 'Low'];
-
+  ProductsDB productsDb = new ProductsDB();
   DatabaseHelper helper = DatabaseHelper();
 
   String appBarTitle;
@@ -45,7 +48,6 @@ class TodoDetailState extends State<TodoDetail> {
 
     return WillPopScope(
         onWillPop: () {
-          // Write some code to control things, when user press Back navigation button in device navigationBar
           moveToLastScreen();
         },
         child: Scaffold(
@@ -55,7 +57,6 @@ class TodoDetailState extends State<TodoDetail> {
             leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
-                  // Write some code to control things, when user press back button in AppBar
                   moveToLastScreen();
                 }),
           ),
@@ -135,7 +136,7 @@ class TodoDetailState extends State<TodoDetail> {
                           onPressed: () {
                             setState(() {
                               debugPrint("Save button clicked");
-                              _save();
+                              _save(context);
                             });
                           },
                         ),
@@ -183,9 +184,31 @@ class TodoDetailState extends State<TodoDetail> {
   }
 
   // Save data to database
-  void _save() async {
-    moveToLastScreen();
-    
+  void _save(BuildContext context) async {
+    if (idController.text == "00000000-0000-0000-0000-000000000000") {
+      Map product = {
+        'name': nameController.text,
+        'unit': unitController.text,
+        'price': double.parse(priceController.text)
+      };
+      var response = await productsDb.addProduct(product);
+      if (response is SuccessState) {
+        Navigator.pushNamed(context, '/todo_list');
+        //moveToLastScreen();
+      }
+    } else {
+      Map product = {
+        'id': idController.text,
+        'name': nameController.text,
+        'unit': unitController.text,
+        'price': double.parse(priceController.text)
+      };
+      var response = await productsDb.updateProduct(product, idController.text);
+      if (response is SuccessState) {
+        Navigator.pushNamed(context, '/todo_list');
+        //moveToLastScreen();
+      }
+    }
   }
 
   void _delete() async {
