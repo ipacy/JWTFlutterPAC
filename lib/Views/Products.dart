@@ -8,6 +8,7 @@ import 'package:flutter_app/Views/ProductDetail.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_guid/flutter_guid.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:cupertino_list_tile/cupertino_list_tile.dart';
 
 final storage = new FlutterSecureStorage();
 
@@ -26,6 +27,7 @@ class ProductListState extends State<Products> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Products List'),
         automaticallyImplyLeading: false,
@@ -37,7 +39,7 @@ class ProductListState extends State<Products> {
             },
           )
         ],
-        backgroundColor: Colors.blueGrey,
+        //backgroundColor: const Color.fromRGBO(44, 120, 192, 255),
       ),
       body: Center(
         child: FutureBuilder(
@@ -73,6 +75,7 @@ class ProductListState extends State<Products> {
                     onRefresh: _onRefresh,
                     onLoading: _onLoading,
                     child: ListView.builder(
+                        padding: const EdgeInsets.all(12.0),
                         itemCount: products.length,
                         itemBuilder: (context, index) {
                           return productItem(index, products, context);
@@ -115,19 +118,14 @@ class ProductListState extends State<Products> {
       ),
       key: Key(products[index].name),
       child: Card(
+        borderOnForeground: true,
         color: Colors.white,
-        elevation: 2.0,
-        child: ListTile(
+        elevation: 6.0,
+        child: CupertinoListTile(
           leading: Image.asset("assets/logo2.png"),
-          title: new Row(
-            children: <Widget>[
-              new Text(
-                products[index].name,
-                style:
-                    new TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
-              )
-            ],
-            crossAxisAlignment: CrossAxisAlignment.center,
+          title: Text(
+            products[index].name,
+            style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
           ),
           subtitle: Text(
             products[index].price.toString() + products[index].unit,
@@ -135,13 +133,14 @@ class ProductListState extends State<Products> {
             overflow: TextOverflow.ellipsis,
             style: new TextStyle(fontWeight: FontWeight.w500, fontSize: 15.0),
           ),
-          isThreeLine: true,
+          isThreeLine: false,
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               GestureDetector(
                 child: Icon(
-                  Icons.lock,
+                  Icons.navigate_next,
                   color: Colors.blue,
                 ),
                 onTap: () {

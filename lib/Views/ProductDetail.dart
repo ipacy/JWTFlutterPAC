@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Models/Product.dart';
 import 'package:flutter_app/Models/Response/Result.dart';
 import 'package:flutter_app/Controllers/ProductsController.dart';
-import 'package:flutter_app/Utils/Toasted.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ProductDetail extends StatefulWidget {
@@ -47,12 +46,20 @@ class TodoDetailState extends State<ProductDetail> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(appBarTitle),
-            backgroundColor: Colors.blueGrey,
+            // backgroundColor: Colors.blueGrey,
             leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
                   moveToLastScreen();
                 }),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.exit_to_app),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login_page');
+                },
+              )
+            ],
           ),
           body: Padding(
             padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0),

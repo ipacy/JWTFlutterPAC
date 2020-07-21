@@ -52,7 +52,7 @@ class _LoginPageState extends State<Login> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.amber,
       body: Builder(
         builder: (oContext) => Center(
           child: ListView(
@@ -73,7 +73,7 @@ class _LoginPageState extends State<Login> {
               SizedBox(height: 24.0),
               CupertinoButton(
                 child: Text('Login'),
-                color: Color.fromARGB(150, 0, 0, 255),
+                color: Color.fromARGB(255, 0, 192, 255),
                 onPressed: () async {
                   LoginController loginController = new LoginController();
                   Map userDetail = {
