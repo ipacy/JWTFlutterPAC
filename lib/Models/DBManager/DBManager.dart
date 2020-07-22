@@ -10,6 +10,7 @@ class DBManager {
       [String sId, dynamic parameter]) async {
     final _storage = FlutterSecureStorage();
     final oToken = await _storage.read(key: 'token');
+
     switch (requestType) {
       case RequestType.GET:
         return http.get(baseUrl + path, headers: <String, String>{
@@ -17,6 +18,7 @@ class DBManager {
           'Authorization': 'Bearer ' + oToken,
         });
         break;
+
       case RequestType.POST:
         return http.post(baseUrl + path,
             headers: <String, String>{
@@ -25,6 +27,7 @@ class DBManager {
             },
             body: parameter);
         break;
+
       case RequestType.DELETE:
         return http.delete(baseUrl + path, headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
